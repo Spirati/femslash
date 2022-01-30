@@ -9,31 +9,29 @@
 	let women: Women = null
 
 	const feys = [
-		"Maya Fey", "Pearl Fey", "Ami Fey", "Iris Hawthorne", "Iris", "Dahlia Hawthorne", "Morgan Fey", "Misty Fey", "Bikini"
+		"Maya Fey", "Pearl Fey", "Ami Fey", "Iris Hawthorne", "Iris", "Dahlia Hawthorne", "Valerie Hawthorne", "Morgan Fey", "Misty Fey", "Bikini", "Mia Fey"
 	]
-	const generatePairing = (year: number): [Woman, Woman] => {
-		const candidates = Object.entries(women).filter(([_, birthYear]) => {
+	const generatePairing = (year: number): [Woman, Woman] | null => {
+		const candidates = [...Object.entries(women)].filter(([_, birthYear]) => {
 			return (year - birthYear) >= 16 
 		})
 		let candidateIndex = Math.floor(Math.random() * candidates.length)
 		const [ name, birthYear ] = candidates.splice(candidateIndex, 1)[0]
 		const age = year - birthYear
 
-		const upperBound = 2 * (age - 7)
-		const lowerBound = age / 2 - 7
+		const lowerBound = age / 2 + 7
 
 		const lastName = name.split(" ").slice(-1)[0]
 		const filteredCandidates = candidates.filter(
 			([candidateName, candidateBirthYear]) => {
-				let candidateLastName = name.split(" ").slice(-1)[0]
+				let candidateLastName = candidateName.split(" ").slice(-1)[0]
 				let candidateAge = year - candidateBirthYear
-				const cUpperBound = 2 * (candidateAge - 7)
-				const cLowerBound = candidateAge / 2 - 7
+				const cLowerBound = candidateAge / 2 + 7
 				return (
 					(candidateLastName != lastName) &&
 					!(feys.includes(name) && feys.includes(candidateName)) &&
-					age >= cLowerBound && age <= cUpperBound && candidateAge >= lowerBound && candidateAge <= upperBound &&
-					(candidateAge < 18 && age < 18)||(candidateAge >= 18 && age >= 18)
+					age >= cLowerBound && candidateAge >= lowerBound &&
+					((candidateAge < 18 && age < 18)||(candidateAge >= 18 && age >= 18))
 				)
 			}
 		)
@@ -73,8 +71,12 @@
 	{#await importWomen()}
 		<h2>Loading women...</h2>
 	{:then}
+		{#if ship}
 		<h3>YOUR RANDOM SHIP IS</h3>
 		<h2>{ship[0].name} (age {ship[0].age}) and {ship[1].name} (age {ship[1].age})</h2>
+		{:else}
+		<h3>THERE IS NO SHIP. TRY AGAIN</h3>
+		{/if}
 		<label for="refYear">Reference year</label><input type="number" min=2016 max=2035 bind:value={year} id="refYear" name="refYear"><br/>
 		<button on:click={() => ship = generatePairing(year)}>Generate anew</button>
 		<button on:click={() => showList = !showList}>{showText}</button>
