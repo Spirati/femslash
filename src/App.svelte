@@ -44,13 +44,14 @@
 
 	let year = 2016
 
-	$: {
+	const submitPair = () => {
 		if(year < 2016) {
 			year = 2016
 		}
 		if(year > 2035) {
 			year = 2035
 		}
+		ship = generatePairing(year)
 	}
 
 	const importWomen = async () => {
@@ -78,7 +79,7 @@
 		<h3>THERE IS NO SHIP. TRY AGAIN</h3>
 		{/if}
 		<label for="refYear">Reference year</label><input type="number" min=2016 max=2035 bind:value={year} id="refYear" name="refYear"><br/>
-		<button on:click={() => ship = generatePairing(year)}>Generate anew</button>
+		<button on:click={submitPair}>Generate anew</button>
 		<button on:click={() => showList = !showList}>{showText}</button>
 		<div class="dropdown {showList ? "uncollapsed" : "collapse"}">
 			<label for="sortBy">Sort by:</label>
